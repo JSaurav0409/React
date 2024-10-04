@@ -1,3 +1,5 @@
+import Chai from "./Chai";
+
 function App() {
   return (
     <>
@@ -7,6 +9,8 @@ function App() {
         <li>Using <code>npx</code>, which consumes more resources.</li>
         <li>Using <code>npm</code>, which consumes fewer resources.</li>
       </ol>
+
+      <Chai />
     </>
   );
 }

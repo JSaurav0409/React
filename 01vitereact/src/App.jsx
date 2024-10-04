@@ -1,3 +1,5 @@
+import Chai from "./chai";
+
 function App() {
   return (
     <>
@@ -9,6 +11,7 @@ function App() {
       <p>
         Vite is fast, lightweight, and simplifies the development process with quick builds and real-time updates.
       </p>
+      <Chai /> {/* Adding one component into another component in react file. In JSX you can only return only one element. So we used fragments <></>*/}
     </>
   );
 }
