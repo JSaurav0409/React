@@ -9,12 +9,18 @@ function App() {
   function addValue() {
     // console.log('clicked', Math.random()*10);
     // counter = counter + 1;
-    setCounter(counter + 1)
+        // Add condition to prevent counter from going above 20
+    if (counter < 20) {
+      setCounter(counter + 1);
+    }
   }
 
   function decreaseValue() {
+    // Add condition to prevent counter from going below 0
+    if (counter > 0) {
+      setCounter(counter - 1);
+    }
     // counter = counter - 1;
-    setCounter(counter - 1)
 
   }
 
