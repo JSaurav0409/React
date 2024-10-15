@@ -4,7 +4,7 @@ function Card({ username, imgSrc, btnText = 'Visit Me', price }) {
     { /*  btnText = 'Visit Me' is a default value if someone forget to pass the props */}
     return (
         <div
-            className="flex flex-col rounded-xl p-4 m-8 border border-gray-300"
+            className="flex flex-col rounded-3xl p-4 m-8 border border-gray-300"
             style={{
                 backdropFilter: 'saturate(180%) blur(14px)',
                 background: 'rgba(255, 255, 255, 0.1)',
@@ -16,7 +16,7 @@ function Card({ username, imgSrc, btnText = 'Visit Me', price }) {
                     alt={`${username}'s NFT`}
                     width="400"
                     height="400"
-                    className="rounded-xl"
+                    className="rounded-2xl"
                 />
             </div>
 
