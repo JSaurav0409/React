@@ -45,12 +45,13 @@ function App() {
   };
 
   return (
-    <div
-      className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
-      style={{
-        backgroundImage: `url('https://files.oaiusercontent.com/file-FqunXQ9qG91EAYVmWr3mOM2A?se=2024-10-24T15%3A29%3A10Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D93074d77-fd9b-45a4-8a32-7a7469092205.webp&sig=ik2iTFgZDLLbbHyfwfEqryZm5xCqCBssvwqWybxCyY0%3D')`,
-      }}
-    >
+<div
+  className="w-full h-screen flex flex-wrap justify-center items-center bg-contain bg-center bg-repeat"
+  style={{
+    backgroundImage: `url('https://files.oaiusercontent.com/file-FqunXQ9qG91EAYVmWr3mOM2A?se=2024-10-24T15%3A29%3A10Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D93074d77-fd9b-45a4-8a32-7a7469092205.webp&sig=ik2iTFgZDLLbbHyfwfEqryZm5xCqCBssvwqWybxCyY0%3D')`,
+  }}
+>
+
       <div className="w-full">
         <div className="w-full max-w-md mx-auto border border-gray-60 rounded-lg p-5 backdrop-blur-sm bg-white/30 relative">
 
