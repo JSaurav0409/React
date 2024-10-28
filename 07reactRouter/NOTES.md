@@ -7,9 +7,9 @@ React Router is a popular library for handling routing in React applications. It
 2. [Key Features](#key-features)
 3. [Installation](#installation)
 4. [`createBrowserRouter` in React Router](#createbrowserrouter-in-react-router)
-5. [`createRoutesFromElements` in React Router](#createroutesfromelements-in-react-router)
-6. [Loaders](#loaders)
-7. [Basic Syntax](#basic-syntax)
+5. [Basic Syntax](#basic-syntax)
+6. [`createRoutesFromElements` in React Router](#createroutesfromelements-in-react-router)
+7. [Loaders](#loaders)
 
 ## Introduction to Routing
 
@@ -50,6 +50,67 @@ npm install react-router-dom
 1. **JS Syntax** :  Write routes in familiar JSX syntax, improving readability.
 2. **Nested Routes** : Define nested routes easily by nesting `<Route>` components within a parent route.
 3. **Dynamic Routing** : Supports parameters for dynamic routes and integrates well with loaders, actions, and error handling.
+
+
+## Basic Syntax
+
+### Declaring Routes
+
+There are two ways to declare routes:
+
+***Using an Array of Route Objects***
+
+```javascript
+
+import { createBrowserRouter } from 'react-router-dom';
+
+const router = createBrowserRouter([
+  {
+    path: '/', // Base path
+    element: <Layout />, // Layout component for all routes within this path
+    children: [
+      {
+        path: 'home',
+        element: <Home />,
+      },
+      {
+        path: 'about',
+        element: <About />,
+      },
+      {
+        path: 'contact',
+        element: <Contact />,
+      },
+    ],
+  },
+]);
+
+```
+***Using JSX with `createRoutesFromElements`***
+
+``` javascript 
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout/>}>
+      <Route path='home' element={<Home />} />
+      <Route path='about' element={<About />} />
+      <Route path='contact' element={<Contact />} />
+      <Route path='user/:userId' element={<User />} />
+      <Route loader={githubInfoLoader} path='github' element={<Github />} />
+    </Route>
+  )
+);
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+);
+
+
+```
+
 
 ## Loaders
 
@@ -118,64 +179,5 @@ export const githubInfoLoader = async () => {
     const response = await fetch('https://api.github.com/users/JSaurav0409')
     return response.json()
 }
-
-```
-
-## Basic Syntax
-
-### Declaring Routes
-
-There are two ways to declare routes:
-
-***Using an Array of Route Objects***
-
-```javascript
-
-import { createBrowserRouter } from 'react-router-dom';
-
-const router = createBrowserRouter([
-  {
-    path: '/', // Base path
-    element: <Layout />, // Layout component for all routes within this path
-    children: [
-      {
-        path: 'home',
-        element: <Home />,
-      },
-      {
-        path: 'about',
-        element: <About />,
-      },
-      {
-        path: 'contact',
-        element: <Contact />,
-      },
-    ],
-  },
-]);
-
-```
-***Using JSX with `createRoutesFromElements`***
-
-``` javascript 
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path='/' element={<Layout/>}>
-      <Route path='home' element={<Home />} />
-      <Route path='about' element={<About />} />
-      <Route path='contact' element={<Contact />} />
-      <Route path='user/:userId' element={<User />} />
-      <Route loader={githubInfoLoader} path='github' element={<Github />} />
-    </Route>
-  )
-);
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
-
 
 ```
