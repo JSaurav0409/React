@@ -1,0 +1,24 @@
+/* App.css */
+html, body {
+  height: 100%;
+  margin: 0; /* Remove any default margin */
+}
+
+.bg-[#172842] {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centers content vertically */
+}
+
+.min-h-screen {
+  min-height: 100vh; /* Ensure it takes up at least 100% of the viewport height */
+}
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-2xl {
+  max-width: 800px; /* Adjust this according to your desired width */
+}
