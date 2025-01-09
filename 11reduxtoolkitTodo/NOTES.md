@@ -89,7 +89,7 @@ Redux is a powerful state management library that helps you manage and share sta
 
 - **Folder Structure:**
 
-  - Create a `reducers` folder. Inside this folder, organize slices into separate folders.
+  - Create a `reducers` folder . Inside this folder, organize slices into separate folders.
   - Use the `createSlice` function from `@reduxjs/toolkit` to create the slices.
   - And here we are also usning the `nanoid` method to generate the unique id's.
 
