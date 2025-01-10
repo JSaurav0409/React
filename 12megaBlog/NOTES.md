@@ -1316,12 +1316,11 @@ import { useForm } from "react-hook-form";
 - Initialize the `useForm` hook in your functional component
 
 ```javascript
-const { register, handleSubmit, errors } = useForm();
+const { register, handleSubmit } = useForm();
 ```
 
 - `register`: Used to bind input elements and specify validation rules.
 - `handleSubmit`: Handles form submission and triggers validation.
-- `errors`: Contains validation errors for the form fields.
 
 **useNavigate()**: The `useNavigate` hook is part of the `react-router-dom` library and is used for programmatic navigation in React applications. Here's a breakdown of its usage
 
