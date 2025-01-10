@@ -1296,7 +1296,7 @@ export default PostCard;
 
 #### 2. Installation and Use of `React-Hook-Form`
 
-**2.1**
+**2.1. Installation of `React-Hook-Form`**
 
 - Integration of **react-hook-form** begins from here.
 - If you haven't already installed the library at the beginning of your project, use the following command:
@@ -1305,7 +1305,7 @@ export default PostCard;
 npm install react-hook-form
 ```
 
-**2.2**
+**2.2. Use of react-hook-form**
 
 - Import `useForm` from `react-hook-form` in your component to manage form state and validation.
 
