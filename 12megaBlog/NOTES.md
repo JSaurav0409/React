@@ -1435,11 +1435,11 @@ function Signup() {
   const create = async (data) => {
     setError(""); // clearing the error
     try {
-      const userData = await authService.createAccount(data);
-      if (userData) {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(login(userData)); // Dispatch login action
+      const createdUser  = await authService.createAccount(data);
+      if (createdUser ) {
+        const currentUser  = await authService.getCurrentUser();
+        if (currentUser ) {
+          dispatch(login(currentUser )); // Dispatch login action
           navigate("/"); // Navigate to the home page
         }
       }
@@ -1489,7 +1489,7 @@ function Signup() {
                 required: true,
                 validate: {
                   matchPattern: (value) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ||
                     "Email address must be a valid address",
                 },
               })}
