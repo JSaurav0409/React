@@ -15,11 +15,11 @@ function Signup() {
   const create = async (data) => {
     setError(""); // clearing the error
     try {
-      const userData = await authService.createAccount(data);
-      if (userData) {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(login(userData)); // Dispatch login action
+      const createdUser = await authService.createAccount(data);
+      if (createdUser) {
+        const currentUser = await authService.getCurrentUser();
+        if (currentUser) {
+          dispatch(login(currentUser)); // Dispatch login action
           navigate("/"); // Navigate to the home page
         }
       }
