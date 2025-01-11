@@ -1322,6 +1322,8 @@ const { register, handleSubmit } = useForm();
 - `register`: Used to bind input elements and specify validation rules.
 - `handleSubmit`: Handles form submission and triggers validation.
 
+---
+
 **useNavigate()**: The `useNavigate` hook is part of the `react-router-dom` library and is used for programmatic navigation in React applications.
 
 - Here's a breakdown of its usage:
