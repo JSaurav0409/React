@@ -1435,11 +1435,11 @@ function Signup() {
   const create = async (data) => {
     setError(""); // clearing the error
     try {
-      const createdUser  = await authService.createAccount(data);
-      if (createdUser ) {
-        const currentUser  = await authService.getCurrentUser();
-        if (currentUser ) {
-          dispatch(login(currentUser )); // Dispatch login action
+      const createdUser = await authService.createAccount(data);
+      if (createdUser) {
+        const currentUser = await authService.getCurrentUser();
+        if (currentUser) {
+          dispatch(login(currentUser)); // Dispatch login action
           navigate("/"); // Navigate to the home page
         }
       }
