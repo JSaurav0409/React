@@ -1541,29 +1541,54 @@ export default Signup;
 
 ---
 
-**RTE ( Real Time Editor )**
+**> RTE ( Real Time Editor )**
+
+- The `RTE` component integrates a rich text editor (TinyMCE) with the `react-hook-form` library. It allows users to input and format content with advanced text editing features.
+- **Key Features**
+  **1. Integration with react-hook-form:**
+  - Uses the `Controller` component to manage the state and value of the editor, ensuring seamless form integration.
+    **2. Rich Text Editing with TinyMCE:**
+  - Provides an advanced editing experience, including features like lists, links, images, and more.
+    **3.Customizable Toolbar and Plugins:**
+  - Includes a variety of plugins and toolbar options to enhance user interaction.
+    **4.Responsive Design:**
+  - Ensures a smooth experience with a fixed editor height of 500px and a responsive layout.
+
+**RTE.jsx**
 
 ```javascript
 import React from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import { Controller } from "react-hook-form";
+import { Editor } from "@tinymce/tinymce-react"; // Import TinyMCE Editor
+import { Controller } from "react-hook-form"; // Import Controller from react-hook-form for form integration
+
+/**
+ * RTE Component - A Rich Text Editor integrated with react-hook-form
+ * @param {string} name - The field name for react-hook-form
+ * @param {object} control - The control object from react-hook-form
+ * @param {string} label - The label displayed above the editor
+ * @param {string} defaultValue - The initial value of the editor content
+ */
 
 export default function RTE({ name, control, label, defaultValue = "" }) {
   return (
     <div className="w-full">
+      {/* Render the label if provided */}
       {label && <label className="inline-block mb-1 pl-1">{label}</label>}
 
+      {/* Integrate TinyMCE Editor with react-hook-form using Controller */}
       <Controller
-        name={name || "Content"}
-        control={control}
+        name={name || "Content"} // Default name if not provided
+        control={control} // react-hook-form control object
         render={({ field: { onChange } }) => (
           <Editor
+            // Set initial value for the editor
             initialValue={defaultValue}
             init={{
-              initialValue: defaultValue,
-              height: 500,
-              menubar: true,
+              initialValue: defaultValue, // Optional: Initialize content value
+              height: 500, // Set the editor height (in pixels)
+              menubar: true, // Enable the menubar
               plugins: [
+                // Plugins to extend the editor's functionality
                 "image",
                 "advlist",
                 "autolink",
@@ -1586,10 +1611,13 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
                 "anchor",
               ],
               toolbar:
+                // Define toolbar actions for the editor
                 "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
               content_style:
+                // Default styling for the content within the editor
                 "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
             }}
+            // Handle changes in the editor's content
             onEditorChange={onChange}
           />
         )}
@@ -1601,8 +1629,51 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
 
 ---
 
-**PostForm.jsx**
-To watch the title and convert it into slug
+**> PostForm.jsx Component Explanation**
+
+The `PostForm.jsx` component is a versatile and modular form designed to create or edit posts. It features auto-generation of a slug from the title, dynamic content management, and file handling for post images. Below is a detailed breakdown of its structure and functionality:
+
+**Features :**
+
+**1.Form Initialization**
+
+- Uses `react-hook-form` for efficient form handling and validation.
+- Pre-fills fields if editing an existing post.
+
+**2.Slug Auto-Generation**
+
+- Dynamically transforms the title into a URL-friendly slug.
+- Ensures the slug is updated in real-time as the title changes.
+
+**3.Post Management**
+
+- Supports both post creation and post editing.
+- Automatically uploads and manages featured images.
+- Deletes old images when uploading a new one during post updates.
+
+**4.Backend Integration**
+
+- Integrates with Appwrite for file storage and database operations.
+- Associates posts with the logged-in user’s ID.
+
+**5.Responsive Layout**
+
+- Divides the form into two sections: content inputs and additional settings.
+- Ensures a clean and organized user interface.
+
+**6.Rich Text Editor (RTE)**
+
+- Provides an intuitive editor for creating or editing post content.
+- Fully integrated with `react-hook-form`.
+
+**7.Validation**
+
+- Enforces required fields for title, slug, status, and image (when creating a post).
+- Allows real-time validation for dynamic inputs.
+
+**8.Dynamic Behavior**
+
+- Updates slug and featured image dynamically based on user inputs.
 
 ```jsx
 import React, { useCallback } from "react";
