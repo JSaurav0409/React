@@ -1543,10 +1543,12 @@ export default Signup;
 
 **> RTE ( Real Time Editor )**
 
-- The `RTE` component integrates a rich text editor (TinyMCE) with the `react-hook-form` library. It allows users to input and format content with advanced text editing features.
+- The `RTE` component integrates a rich text editor (TinyMCE) with the `react-hook-form` library.
+- It allows users to input and format content with advanced text editing features.
 - **Key Features**
   **1. Integration with react-hook-form:**
   - Uses the `Controller` component to manage the state and value of the editor, ensuring seamless form integration.
+  - Library embraces uncontrolled components and native HTML input.
     **2. Rich Text Editing with TinyMCE:**
   - Provides an advanced editing experience, including features like lists, links, images, and more.
     **3.Customizable Toolbar and Plugins:**
