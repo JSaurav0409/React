@@ -5,7 +5,7 @@ import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export default function PostForm() {
+export default function PostForm({ post }) {
   // Initializing the form with react-hook-form, including default values
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
@@ -21,40 +21,43 @@ export default function PostForm() {
   const userData = useSelector((state) => state.user.userData); // Fetch user data from Redux store
 
   const submit = async (data) => {
-    // Check if editing a post
+    //  Check if updating an existing post
     if (post) {
+      // Creating a new post
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0]) // Upload new file if provided
+        ? appwriteService.uploadFile(data.image[0]) // Upload new image if provided
         : null;
 
       if (file) {
-        appwriteService.deleteFile(post.featuredImage); // Delete old featured image
+        appwriteService.deleteFile(post.featuredImage); // Delete previous featured image
       }
 
-      // Update post details
+      // Update the post with new data (including the new image if uploaded)
       const dbPost = await appwriteService.updatePost(post.$id, {
         ...data,
-        featuredImage: file ? file.$id : undefined,
+        featuredImage: file ? file.$id : undefined, // Use new file ID if uploaded
       });
 
       if (dbPost) {
-        navigate(`/post/${dbPost.id}`); // Redirect to the updated post's page
+        navigate(`/post/${dbPost.id}`); // Redirect to the updated post
       }
     } else {
       // For new post creation
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0]) // Upload featured image
-        : null;
+        ? appwriteService.uploadFile(data.image[0])
+        : null; // Upload new featured image
 
       if (file) {
         const fileId = file.$id;
-        data.featuredImage = fileId; // Add featured image ID to the data
+        data.featuredImage = fileId; //  Assign uploaded image ID to post data
+
+        // Save the new post with user association
         const dbPost = await appwriteService.createPost({
           ...data,
-          userId: userData.$id, // Associate post with current user
+          userId: userData.$id, //  Link post to the logged-in user
         });
         if (dbPost) {
-          navigate(`/post/${dbPost.id}`); // Redirect to the created post's page
+          navigate(`/post/${dbPost.id}`); // Redirect to newly created post
         }
       }
     }
