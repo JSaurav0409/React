@@ -34,7 +34,7 @@ export default function PostForm({ post }) {
 
       // Update the post with new data (including the new image if uploaded)
       const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data,
+        ...data, 
         featuredImage: file ? file.$id : undefined, // Use new file ID if uploaded
       });
 
