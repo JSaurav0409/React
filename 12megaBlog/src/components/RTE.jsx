@@ -5,7 +5,7 @@ import { Controller } from "react-hook-form"; // Import Controller from react-ho
 /**
  * RTE Component - A Rich Text Editor integrated with react-hook-form
  * @param {string} name - The field name for react-hook-form
- * @param {object} control - The control object from react-hook-form
+ * @param {object} control - The control object from react-hook-form will pass on the control from this component.
  * @param {string} label - The label displayed above the editor
  * @param {string} defaultValue - The initial value of the editor content
  */
