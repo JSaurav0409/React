@@ -1845,6 +1845,7 @@ To create separate pages in your project, follow these steps:
 1. **Create a new file** inside the `pages` folder for each page (e.g., `Signup.jsx`, `Login.jsx`).
 2. **Import the corresponding component** from the `components` folder.
 3. **Render the component inside a wrapper** for consistent styling.
+4. **Import and export every component** in the `index.js` file for easy access of the components.
 
 ---
 
@@ -2098,4 +2099,122 @@ export default function Post() {
 
 ---
 
-## Setting up the routing 
+## **Setting Up Routing in a React Application**
+
+To set up routing in your React application using `react-router-dom`, follow the steps below. This configuration enables navigation between different pages of your application.
+
+#### **1. Import Required Dependencies**
+
+Start by importing necessary components from React, `react-router-dom`, and your Redux store setup.
+
+```jsx
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css"; // Global styles
+import App from "./App.jsx"; // Main application component
+import { Provider } from "react-redux";
+import store from "./store/store.js"; // Redux store
+import { createBrowserRouter, RouterProvider } from "react-router-dom"; // React Router
+```
+
+#### **2. Import Pages and Layouts**
+
+You will need to import all the page components and layout components you intend to use for routing.
+
+```jsx
+// Importing pages
+import AddPost from "../src/pages/AddPost.jsx";
+import AllPost from "../src/pages/AllPost.jsx";
+import EditPost from "../src/pages/EditPost.jsx";
+import Home from "../src/pages/Home.jsx";
+import Login from "../src/pages/Login.jsx";
+import Post from "../src/pages/Post.jsx";
+import Signup from "../src/pages/Signup.jsx";
+// Importing Auth layout to wrap routes that require authentication
+import { AuthLayout } from "./components/index.js";
+```
+
+#### **3. Define Routes Using `createBrowserRouter`**
+
+You can now create the routes for your app. For authentication-protected routes, the `AuthLayout` component is used to wrap those routes.
+
+```jsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />, // The main app component that wraps all routes
+    children: [
+      {
+        path: "/",
+        element: <Home />, // Home route
+      },
+      {
+        path: "/login",
+        element: (
+          <AuthLayout authentication={false}>
+            <Login /> {/* Route for the login page */}
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/signup",
+        element: (
+          <AuthLayout authentication={false}>
+            <Signup /> {/* Route for the signup page */}
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/all-posts",
+        element: (
+          <AuthLayout authentication>
+            <AllPost /> {/* Route for viewing all posts (authentication required) */}
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/add-post",
+        element: (
+          <AuthLayout authentication>
+            <AddPost /> {/* Route for adding a post (authentication required) */}
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/edit-post/:slug",
+        element: (
+          <AuthLayout authentication>
+            <EditPost /> {/* Route for editing a post (authentication required) */}
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/post/:slug",
+        element: <Post /> {/* Route for viewing a single post */}
+      },
+    ],
+  },
+]);
+
+```
+
+#### **4.Render the Application**
+
+Now, render your app using `RouterProvider` to apply routing functionality. Make sure to wrap the app in `StrictMode` and `Provider` to handle the Redux store.
+
+```jsx
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} /> {/* Attach the router to the app */}
+    </Provider>
+  </React.StrictMode>
+);
+```
+
+### **Explanation**
+
+- `createBrowserRouter`: Defines all the routes and components to be rendered based on the URL.
+- `RouterProvider`: Provides the routing context to the application.
+- `AuthLayout`: A wrapper for routes that require authentication, controlling access.
+- `Provider`: The Redux provider that makes the store available throughout the app.
