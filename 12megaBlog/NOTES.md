@@ -1678,14 +1678,14 @@ The `PostForm.jsx` component is a versatile and modular form designed to create 
 - Updates slug and featured image dynamically based on user inputs.
 
 ```jsx
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, Select, RTE } from "../index";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export default function PostForm() {
+export default function PostForm({ post }) {
   // Initializing the form with react-hook-form, including default values
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
@@ -1701,40 +1701,43 @@ export default function PostForm() {
   const userData = useSelector((state) => state.user.userData); // Fetch user data from Redux store
 
   const submit = async (data) => {
-    // Check if editing a post
+    //  Check if updating an existing post
     if (post) {
+      // Creating a new post
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0]) // Upload new file if provided
+        ? appwriteService.uploadFile(data.image[0]) // Upload new image if provided
         : null;
 
       if (file) {
-        appwriteService.deleteFile(post.featuredImage); // Delete old featured image
+        appwriteService.deleteFile(post.featuredImage); // Delete previous featured image
       }
 
-      // Update post details
+      // Update the post with new data (including the new image if uploaded)
       const dbPost = await appwriteService.updatePost(post.$id, {
         ...data,
-        featuredImage: file ? file.$id : undefined,
+        featuredImage: file ? file.$id : undefined, // Use new file ID if uploaded
       });
 
       if (dbPost) {
-        navigate(`/post/${dbPost.id}`); // Redirect to the updated post's page
+        navigate(`/post/${dbPost.id}`); // Redirect to the updated post
       }
     } else {
       // For new post creation
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0]) // Upload featured image
-        : null;
+        ? await appwriteService.uploadFile(data.image[0])
+        : null; // Upload new featured image
 
       if (file) {
         const fileId = file.$id;
-        data.featuredImage = fileId; // Add featured image ID to the data
+        data.featuredImage = fileId; //  Assign uploaded image ID to post data
+
+        // Save the new post with user association
         const dbPost = await appwriteService.createPost({
           ...data,
-          userId: userData.$id, // Associate post with current user
+          userId: userData.$id, //  Link post to the logged-in user
         });
         if (dbPost) {
-          navigate(`/post/${dbPost.id}`); // Redirect to the created post's page
+          navigate(`/post/${dbPost.id}`); // Redirect to newly created post
         }
       }
     }
@@ -1746,14 +1749,15 @@ export default function PostForm() {
       return value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, "-") // Remove unwanted characters
-        .replace(/\s/g, "-"); // Replace spaces with dashes
+        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and dashes
+        .replace(/\s+/g, "-") // Replace spaces with a single dash
+        .replace(/-+/g, "-"); // Remove multiple consecutive dashes
 
     return "";
   }, []);
 
   // Watch for title changes and auto-generate slug
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "title") {
         setValue("slug", slugTransform(value.title, { shouldValidate: true })); // Set slug value based on title
@@ -1761,7 +1765,7 @@ export default function PostForm() {
     });
 
     return () => {
-      subscription.unsubscribe(); // Cleanup subscription
+      subscription.unsubscribe(); // Cleanup subscription, good for memory management.
     };
   }, [watch, slugTransform, setValue]);
 
@@ -1831,3 +1835,267 @@ export default function PostForm() {
   );
 }
 ```
+
+---
+
+## 📌 Creating Different Pages in a React Project
+
+To create separate pages in your project, follow these steps:
+
+1. **Create a new file** inside the `pages` folder for each page (e.g., `Signup.jsx`, `Login.jsx`).
+2. **Import the corresponding component** from the `components` folder.
+3. **Render the component inside a wrapper** for consistent styling.
+
+---
+
+## Example: Creating different pages
+
+- **Signup.jsx**
+
+```jsx
+import React from "react";
+import { Signup as SignupComponent } from "../components"; // Import the Signup component
+
+function Signup() {
+  return (
+    <div className="py-8">
+      {/* Add padding for consistent spacing */}
+      <SignupComponent /> {/* Render the Signup component */}
+    </div>
+  );
+}
+
+export default Signup;
+```
+
+- **Login.jsx**
+
+```jsx
+import React from "react";
+import { Login as LoginComponent } from "../components"; // Import the Login component
+
+function Login() {
+  return (
+    <div className="py-8">
+      {/* Add padding for consistent spacing */}
+      <LoginComponent /> {/* Render the Login component */}
+    </div>
+  );
+}
+
+export default Login;
+```
+
+- **AddPost.jsx**
+
+```jsx
+import React from "react";
+import { Container, PostForm } from "../components";
+
+function AddPost() {
+  return (
+    <div className="py-8">
+      <Container>
+        <PostForm />
+      </Container>
+    </div>
+  );
+}
+
+export default AddPost;
+```
+
+- **AllPost.jsx**
+
+```jsx
+import React, { useState, useEffect } from "react";
+import { Container, PostCard } from "../components";
+import appwriteService from "../appwrite/config";
+
+function AllPost() {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {}, []);
+  appwriteService.getAllPosts([]).then((posts) => {
+    if (posts) {
+      setPosts(posts.documents);
+    }
+  });
+
+  return (
+    <div className="w-full py-8">
+      <Container>
+        <div className="flex flex-wrap">
+          {posts.map((post) => (
+            <div key={post.$id} className="p-2 w-1/4">
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+      </Container>
+    </div>
+  );
+}
+
+export default AllPost;
+```
+
+- **EditPost.jsx**
+
+```jsx
+import React, { useEffect, useState } from "react";
+import { Container, PostForm } from "../components";
+import appwriteService from "../appwrite/config";
+import { useNavigate, useParams } from "react-router-dom";
+
+function EditPost() {
+  const [post, setPost] = useState(null);
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (slug) {
+      appwriteService.getPostBySlug(slug).then((post) => {
+        if (post) {
+          setPost(response);
+        }
+      });
+    } else {
+      navigate("/"); // Redirect to home if slug is not provided
+    }
+  }, [slug, navigate]);
+
+  return post ? (
+    <div className="py-8">
+      <Container>
+        <PostForm post={post} />
+      </Container>
+    </div>
+  ) : null;
+}
+
+export default EditPost;
+```
+
+- **Home.jsx**
+
+```jsx
+import React, { useEffect, useState } from "react";
+import appwriteService from "../appwrite/config";
+import { Container, PostCard } from "../components";
+
+function Home() {
+  const [post, setPost] = useState([]);
+  useEffect(() => {
+    appwriteService.getAllPosts().then((posts) => {
+      if (posts) {
+        setPost(posts.documents);
+      }
+    });
+  }, []);
+
+  if (post.length === 0) {
+    return (
+      <div className="w-full py-8 mt-4 text-center">
+        <Container>
+          <div className="flex flex-wrap">
+            <div className="p-2 w-full">
+              <h1 className="text-2xl font-bold hover:text-gray-500">
+                Login to read post
+              </h1>
+            </div>
+          </div>
+        </Container>
+      </div>
+    );
+  }
+  return (
+    <div className="w-full py-8">
+      <Container>
+        <div className="flex flex-wrap">
+          {post.map((post) => (
+            <div key={post.$id} className="p-2 w-1/4">
+              <PostCard {...post} />
+            </div>
+          ))}
+        </div>
+      </Container>
+    </div>
+  );
+}
+
+export default Home;
+```
+
+- **Post.jsx**
+
+```jsx
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import appwriteService from "../appwrite/config";
+import { Button, Container } from "../components";
+import parse from "html-react-parser";
+import { useSelector } from "react-redux";
+
+export default function Post() {
+  const [post, setPost] = useState(null);
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
+  const userData = useSelector((state) => state.auth.userData);
+
+  const isAuthor = post && userData ? post.userId === userData.$id : false;
+
+  useEffect(() => {
+    if (slug) {
+      appwriteService.getPostBySlug(slug).then((post) => {
+        if (post) setPost(post);
+        else navigate("/");
+      });
+    } else navigate("/");
+  }, [slug, navigate]);
+
+  const deletePost = () => {
+    appwriteService.deletePost(post.$id).then((status) => {
+      if (status) {
+        appwriteService.deleteFile(post.featuredImage);
+        navigate("/");
+      }
+    });
+  };
+
+  return post ? (
+    <div className="py-8">
+      <Container>
+        <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+          <img
+            src={appwriteService.getFilePreview(post.featuredImage)}
+            alt={post.title}
+            className="rounded-xl"
+          />
+
+          {isAuthor && (
+            <div className="absolute right-6 top-6">
+              <Link to={`/edit-post/${post.$id}`}>
+                <Button bgColor="bg-green-500" className="mr-3">
+                  Edit
+                </Button>
+              </Link>
+              <Button bgColor="bg-red-500" onClick={deletePost}>
+                Delete
+              </Button>
+            </div>
+          )}
+        </div>
+        <div className="w-full mb-6">
+          <h1 className="text-2xl font-bold">{post.title}</h1>
+        </div>
+        <div className="browser-css">{parse(post.content)}</div>
+      </Container>
+    </div>
+  ) : null;
+}
+```
+
+---
+
+## Setting up the routing 
