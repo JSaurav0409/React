@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, Select, RTE } from "../index";
 import appwriteService from "../../appwrite/config";
@@ -34,7 +34,7 @@ export default function PostForm({ post }) {
 
       // Update the post with new data (including the new image if uploaded)
       const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data, 
+        ...data,
         featuredImage: file ? file.$id : undefined, // Use new file ID if uploaded
       });
 
@@ -44,7 +44,7 @@ export default function PostForm({ post }) {
     } else {
       // For new post creation
       const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0])
+        ? await appwriteService.uploadFile(data.image[0])
         : null; // Upload new featured image
 
       if (file) {
@@ -69,14 +69,15 @@ export default function PostForm({ post }) {
       return value
         .trim()
         .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, "-") // Remove unwanted characters
-        .replace(/\s/g, "-"); // Replace spaces with dashes
+        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and dashes
+        .replace(/\s+/g, "-") // Replace spaces with a single dash
+        .replace(/-+/g, "-"); // Remove multiple consecutive dashes
 
     return "";
   }, []);
 
   // Watch for title changes and auto-generate slug
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "title") {
         setValue("slug", slugTransform(value.title, { shouldValidate: true })); // Set slug value based on title
@@ -84,7 +85,7 @@ export default function PostForm({ post }) {
     });
 
     return () => {
-      subscription.unsubscribe(); // Cleanup subscription
+      subscription.unsubscribe(); // Cleanup subscription, good for memory management.
     };
   }, [watch, slugTransform, setValue]);
 
