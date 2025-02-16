@@ -4,8 +4,10 @@ import { Container, PostCard } from "../components";
 
 function Home() {
   const [post, setPost] = useState([]);
+
   useEffect(() => {
     appwriteService.getAllPosts().then((posts) => {
+      console.log("Fetched Home Posts Data:", posts); // Debugging
       if (posts) {
         setPost(posts.documents);
       }
@@ -27,6 +29,7 @@ function Home() {
       </div>
     );
   }
+
   return (
     <div className="w-full py-8">
       <Container>

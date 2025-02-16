@@ -1,16 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { Container, PostCard } from "../components";
+import React, { useEffect, useState } from "react";
 import appwriteService from "../appwrite/config";
+import { Container, PostCard } from "../components";
 
-function AllPost() {
+function AllPosts() {
   const [posts, setPosts] = useState([]);
+
   useEffect(() => {
-    appwriteService.getAllPosts([]).then((posts) => {
-      if (posts) {
-        setPosts(posts.documents);
-      }
+    appwriteService.getAllPosts().then((res) => {
+      console.log("Fetched All Posts Data:", res); // Debugging
+      setPosts(res.documents || []);
     });
   }, []);
+
+  if (posts.length === 0) {
+    return (
+      <div className="w-full py-8 mt-4 text-center">
+        <Container>
+          <div className="flex flex-wrap">
+            <div className="p-2 w-full">
+              <h1 className="text-2xl font-bold hover:text-gray-500">
+                No Posts Available
+              </h1>
+            </div>
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full py-8">
@@ -18,7 +34,7 @@ function AllPost() {
         <div className="flex flex-wrap">
           {posts.map((post) => (
             <div key={post.$id} className="p-2 w-1/4">
-              <PostCard post={post} />
+              <PostCard {...post} />
             </div>
           ))}
         </div>
@@ -27,4 +43,4 @@ function AllPost() {
   );
 }
 
-export default AllPost;
+export default AllPosts;

@@ -6,131 +6,121 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
-  // Initializing the form with react-hook-form, including default values
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
-        title: post?.title || "", // Default to post's title if editing, else empty
+        title: post?.title || "",
         slug: post?.slug || "",
         content: post?.content || "",
-        status: post?.status || "active", // Default status is "active"
+        status: post?.status || "active",
       },
     });
 
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData); // Fetch user data from Redux store
+  const userData = useSelector((state) => state.auth.userData);
 
   const submit = async (data) => {
-    //  Check if updating an existing post
-     console.log("Submitting data:", data); // ✅ Debugging Step
-    if (post) {
-      // Creating a new post
-      const file = data.image[0]
-        ? appwriteService.uploadFile(data.image[0]) // Upload new image if provided
-        : null;
+    try {
+      console.log("Submitting data:", data);
 
-      if (file) {
-        appwriteService.deleteFile(post.featuredImage); // Delete previous featured image
-      }
+      let fileId = post?.featuredImage || null;
 
-      // Update the post with new data (including the new image if uploaded)
-      const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data,
-        featuredImage: file ? file.$id : undefined, // Use new file ID if uploaded
-      });
+      // Check if an image is uploaded
+      if (data.image && data.image.length > 0) {
+        console.log("Uploading file:", data.image[0]);
 
-      if (dbPost) {
-        navigate(`/post/${dbPost.id}`); // Redirect to the updated post
-      }
-    } else {
-      // For new post creation
-      const file = data.image[0]
-        ? await appwriteService.uploadFile(data.image[0])
-        : null; // Upload new featured image
+        const uploadedFile = await appwriteService.uploadFile(data.image[0]);
 
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId; //  Assign uploaded image ID to post data
+        if (!uploadedFile || !uploadedFile.$id) {
+          throw new Error("File upload failed!");
+        }
 
-        // Save the new post with user association
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id, //  Link post to the logged-in user
-        });
-        if (dbPost) {
-          navigate(`/post/${dbPost.id}`); // Redirect to newly created post
+        fileId = uploadedFile.$id;
+
+        // Delete old image if updating a post
+        if (post?.featuredImage) {
+          await appwriteService.deleteFile(post.featuredImage);
         }
       }
+
+      const postData = {
+        ...data,
+        featuredImage: fileId, // Ensure this is passed
+        userId: userData?.$id,
+      };
+
+      let dbPost;
+      if (post) {
+        dbPost = await appwriteService.updatePost(post.$id, postData);
+      } else {
+        dbPost = await appwriteService.createPost(postData);
+      }
+
+      if (dbPost?.$id) {
+        navigate(`/post/${dbPost.$id}`);
+      }
+    } catch (error) {
+      console.error("Error submitting post:", error);
     }
   };
 
-  // Function to transform title into a slug
   const slugTransform = useCallback((value) => {
-    if (value && typeof value === "string")
-      return value
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and dashes
-        .replace(/\s+/g, "-") // Replace spaces with a single dash
-        .replace(/-+/g, "-"); // Remove multiple consecutive dashes
-
-    return "";
+    return value
+      ?.trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
   }, []);
 
-  // Watch for title changes and auto-generate slug
   useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "title") {
-        setValue("slug", slugTransform(value.title, { shouldValidate: true })); // Set slug value based on title
+        setValue("slug", slugTransform(value.title), { shouldValidate: true });
       }
     });
 
-    return () => {
-      subscription.unsubscribe(); // Cleanup subscription, good for memory management.
-    };
+    return () => subscription.unsubscribe();
   }, [watch, slugTransform, setValue]);
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
-      {/* Left section: Form inputs */}
       <div className="w-2/3 px-2">
         <InputBox
           label="Title :"
           placeholder="Title"
           className="mb-4"
-          {...register("title", { required: true })} // Title is required
+          {...register("title", { required: true })}
         />
         <InputBox
           label="Slug :"
           placeholder="Slug"
           className="mb-4"
-          {...register("slug", { required: true })} // Slug is required
+          {...register("slug", { required: true })}
           onInput={(e) => {
             setValue("slug", slugTransform(e.currentTarget.value), {
-              shouldValidate: true, // Validate after updating slug
+              shouldValidate: true,
             });
           }}
         />
         <RTE
           label="Content :"
           name="content"
-          control={control} // Rich text editor with react-hook-form
+          control={control}
           defaultValue={getValues("content")}
         />
       </div>
 
-      {/* Right section: File upload, status, and submit */}
       <div className="w-1/3 px-2">
         <InputBox
           label="Featured Image :"
           type="file"
           className="mb-4"
-          accept="image/png, image/jpg, image/jpeg, image/gif" // Only accept image files
-          {...register("image", { required: !post })} // Image is required for new posts
+          accept="image/png, image/jpg, image/jpeg, image/gif"
+          {...register("image")}
         />
-        {post && (
+        {post?.featuredImage && (
           <div className="w-full mb-4">
-            {/* Display current featured image if editing */}
             <img
               src={appwriteService.getFilePreview(post.featuredImage)}
               alt={post.title}
@@ -139,17 +129,17 @@ export default function PostForm({ post }) {
           </div>
         )}
         <SelectActiveStatus
-          options={["active", "inactive"]} // Status options
+          options={["active", "inactive"]}
           label="Status"
           className="mb-4"
-          {...register("status", { required: true })} // Status is required
+          {...register("status", { required: true })}
         />
         <Button
           type="submit"
-          bgColor={post ? "bg-green-500" : undefined} // Green button for editing
+          bgColor={post ? "bg-green-500" : undefined}
           className="w-full"
         >
-          {post ? "Update" : "Submit"} {/* Dynamic button text */}
+          {post ? "Update" : "Submit"}
         </Button>
       </div>
     </form>
