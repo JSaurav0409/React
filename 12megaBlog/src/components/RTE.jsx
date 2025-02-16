@@ -1,41 +1,33 @@
 import React from "react";
-import { Editor } from "@tinymce/tinymce-react"; // Import TinyMCE Editor
-import { Controller } from "react-hook-form"; // Import Controller from react-hook-form for form integration
+import { Editor } from "@tinymce/tinymce-react";
+import { Controller } from "react-hook-form";
 
-/**
- * RTE Component - A Rich Text Editor integrated with react-hook-form
- * @param {string} name - The field name for react-hook-form
- * @param {object} control - The control object from react-hook-form will pass on the control from this component.
- * @param {string} label - The label displayed above the editor
- * @param {string} defaultValue - The initial value of the editor content
- */
+// ✅ Use Vite-compatible environment variable
+const TINY_MCE_API_KEY =
+  import.meta.env.VITE_TINYMCE_API_KEY || "YOUR_DEFAULT_API_KEY";
 
 export default function RTE({ name, control, label, defaultValue = "" }) {
   return (
     <div className="w-full">
-      {/* Render the label if provided */}
       {label && <label className="inline-block mb-1 pl-1">{label}</label>}
 
-      {/* Integrate TinyMCE Editor with react-hook-form using Controller */}
       <Controller
-        name={name || "Content"} // Default name if not provided
-        control={control} // react-hook-form control object
-        render={({ field: { onChange } }) => (
+        name={name || "content"}
+        control={control}
+        defaultValue={defaultValue}
+        render={({ field: { onChange, value } }) => (
           <Editor
-            // Set initial value for the editor
-            initialValue={defaultValue}
+            apiKey={TINY_MCE_API_KEY} // ✅ Vite-compatible API key
+            value={value}
             init={{
-              initialValue: defaultValue, // Optional: Initialize content value
-              height: 500, // Set the editor height (in pixels)
-              menubar: true, // Enable the menubar
+              height: 500,
+              menubar: true,
               plugins: [
-                // Plugins to extend the editor's functionality
                 "image",
                 "advlist",
                 "autolink",
                 "lists",
                 "link",
-                "image",
                 "charmap",
                 "preview",
                 "anchor",
@@ -46,19 +38,16 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
                 "insertdatetime",
                 "media",
                 "table",
-                "code",
                 "help",
                 "wordcount",
-                "anchor",
               ],
               toolbar:
-                // Define toolbar actions for the editor
-                "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
+                "undo redo | blocks | image | bold italic forecolor | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat | help",
               content_style:
-                // Default styling for the content within the editor
                 "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
             }}
-            // Handle changes in the editor's content
             onEditorChange={onChange}
           />
         )}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../features/auth/authSlice";
-import { Button, Input, Logo } from "./index";
+import { Button, InputBox, Logo } from "./index";
 import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth";
 import { useForm } from "react-hook-form";
@@ -53,7 +53,7 @@ function Login() {
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
         <form onSubmit={handleSubmit(login)} className="mt-8">
           <div className="space-y-5">
-            <Input
+            <InputBox
               label="Email: "
               placeholder="Enter your email"
               type="email"
@@ -66,7 +66,7 @@ function Login() {
                 },
               })}
             />
-            <Input
+            <InputBox
               label="Password: "
               type="password"
               placeholder="Enter your password"

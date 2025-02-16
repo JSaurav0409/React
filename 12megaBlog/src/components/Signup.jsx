@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../features/auth/authSlice";
-import { Button, Input, Logo } from "./index";
+import { Button, InputBox, Logo } from "./index";
 import { useDispatch } from "react-redux";
 import authService from "../appwrite/auth";
 import { useForm } from "react-hook-form";
@@ -54,14 +54,14 @@ function Signup() {
 
         <form onSubmit={handleSubmit(create)}>
           <div className="space-y-5">
-            <Input
+            <InputBox
               label="Full Name: "
               placeholder="Enter your full name"
               {...register("name", {
                 required: true,
               })}
             />
-            <Input
+            <InputBox
               label="Email: "
               placeholder="Enter your email"
               type="email"
@@ -74,7 +74,7 @@ function Signup() {
                 },
               })}
             />
-            <Input
+            <InputBox
               label="Password: "
               type="password"
               placeholder="Enter your password"

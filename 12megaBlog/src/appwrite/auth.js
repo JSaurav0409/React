@@ -19,27 +19,23 @@ export class AuthService {
   // account creation, here we make sure that the application do not get vendor lock-in.
   async createAccount({ email, password, name }) {
     try {
-      const userAccount = await this.account.create(
-        ID.unique(),
-        email,
-        password,
-        name
-      );
+      const userAccount = await this.account.create(ID.unique(), email, password, name);
       if (userAccount) {
-        // call another method which forcefully login the user
-        return this.login({ email, password });
-      } else {
-        return userAccount;
+        return await this.login({ email, password });
       }
+      return null;
     } catch (error) {
+      console.error("Error creating account:", error);
       throw error;
     }
   }
+  
 
   // account login
   async login({ email, password }) {
     try {
-      return await this.account.createEmailPasswordSession(email, password);
+      await this.account.createEmailPasswordSession(email, password);
+      return await this.getCurrentUser(); // Return user data after login
     } catch (error) {
       throw error;
     }
@@ -48,18 +44,23 @@ export class AuthService {
   // Getting the current user
   async getCurrentUser() {
     try {
+      const session = await this.account.getSession("current"); // Check if session exists
+      if (!session) {
+        console.log("No active session found.");
+        return null;
+      }
       return await this.account.get();
     } catch (error) {
       console.log("Appwrite service :: getCurrentUser :: error: ", error);
+      return null;
     }
-
-    return null;
   }
 
   // Logging out
   async logout() {
     try {
-      await this.account.deleteSessions();
+      await this.account.deleteSession("current"); // Delete only current session
+      console.log("User logged out successfully.");
     } catch (error) {
       console.log("Appwrite service :: logout :: error: ", error);
     }

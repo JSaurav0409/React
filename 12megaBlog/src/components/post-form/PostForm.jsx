@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Select, RTE } from "../index";
+import { Button, InputBox, SelectActiveStatus, RTE } from "../index";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -18,10 +18,11 @@ export default function PostForm({ post }) {
     });
 
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.user.userData); // Fetch user data from Redux store
+  const userData = useSelector((state) => state.auth.userData); // Fetch user data from Redux store
 
   const submit = async (data) => {
     //  Check if updating an existing post
+     console.log("Submitting data:", data); // ✅ Debugging Step
     if (post) {
       // Creating a new post
       const file = data.image[0]
@@ -93,13 +94,13 @@ export default function PostForm({ post }) {
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
       {/* Left section: Form inputs */}
       <div className="w-2/3 px-2">
-        <Input
+        <InputBox
           label="Title :"
           placeholder="Title"
           className="mb-4"
           {...register("title", { required: true })} // Title is required
         />
-        <Input
+        <InputBox
           label="Slug :"
           placeholder="Slug"
           className="mb-4"
@@ -120,7 +121,7 @@ export default function PostForm({ post }) {
 
       {/* Right section: File upload, status, and submit */}
       <div className="w-1/3 px-2">
-        <Input
+        <InputBox
           label="Featured Image :"
           type="file"
           className="mb-4"
@@ -137,7 +138,7 @@ export default function PostForm({ post }) {
             />
           </div>
         )}
-        <Select
+        <SelectActiveStatus
           options={["active", "inactive"]} // Status options
           label="Status"
           className="mb-4"
